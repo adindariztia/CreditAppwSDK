@@ -46,10 +46,10 @@ public class MainActivity extends AppCompatActivity {
         System.loadLibrary("artoz-sdk-android");
     }
 
-    private ArrayList<String> listProvinsi, listKabupaten, listKecamatan, listKelurahan;
+    private ArrayList<String> listProvinsi, listKabupaten, listKecamatan, listKelurahan, listKodepos;
     private List<ResponseTempats> arrayProvinsi;
     Context mContext;
-    Spinner spinnerProvinsi, spinnerKabupaten, spinnerKecamatan, spinnerKelurahan;
+    Spinner spinnerProvinsi, spinnerKabupaten, spinnerKecamatan, spinnerKelurahan,spinnerKodepos;
     String kelurahanName;
 
     int provinsiId, kabupatenId, kecamatanId, kelurahanId;
@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         spinnerKabupaten= findViewById(R.id.kabupaten);
         spinnerKecamatan = findViewById(R.id.kecamatan);
         spinnerKelurahan = findViewById(R.id.kelurahan);
+        spinnerKodepos = findViewById(R.id.kodepos);
 
         listProvinsi = new ArrayList<>();
         listKabupaten = new ArrayList<>();
@@ -286,7 +287,7 @@ public class MainActivity extends AppCompatActivity {
                 kelurahanName = response.GetMessage().get_tempats(position).get_nama();
                 Toast.makeText(MainActivity.this, "kelurahan " + kelurahanId, Toast.LENGTH_SHORT).show();
 
-//                initializeSpinnerKodepos(client, options, kelurahanName);
+                initializeSpinnerKodepos(client, options, kelurahanName);
             }
 
             @Override
@@ -296,19 +297,27 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-//    public void initializeSpinnerKodepos(final Creditapplicationv10Client client, final MethodCallOptions options, String kelurahanName){
-//        DaftarKodeposRequest daftarKodeposRequest = new DaftarKodeposRequest();
-//        daftarKodeposRequest.set_kelurahan(kelurahanName);
-//
-//        final DaftarKodeposResponse_ServiceResponse response = client.DaftarKodepos(daftarKodeposRequest, options);
-//
-//        if(response.GetStatus().ok()){
-//            int panjangArray = response.GetMessage().kodepos_size();
-//
-//            for(int i = 0; i < panjangArray; i++){
-//                String namaKodepos = response.GetMessage().get_kodepos(i).get_kodepos()
-//            }
-//        }
-//    }
+    public void initializeSpinnerKodepos(final Creditapplicationv10Client client, final MethodCallOptions options, String kelurahanName){
+        DaftarKodeposRequest daftarKodeposRequest = new DaftarKodeposRequest();
+        daftarKodeposRequest.set_kelurahan(kelurahanName);
+
+        final DaftarKodeposResponse_ServiceResponse response = client.DaftarKodepos(daftarKodeposRequest, options);
+
+        if(response.GetStatus().ok()){
+            listKodepos = new ArrayList<>();
+            int panjangArray = response.GetMessage().kodepos_size();
+
+            for(int i = 0; i < panjangArray; i++){
+                String namaKodepos = response.GetMessage().get_kodepos(i).get_kodepos();
+
+                listKodepos.add(namaKodepos);
+
+            }
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_dropdown_item, listKodepos);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerKodepos.setAdapter(adapter);
+    }
 
 }
